@@ -44,66 +44,61 @@ define([
             }
         });
 
-
-// Shipping	Pre-Order	ID	Purchase Point	Purchase Date	Bill-to Name	Ship-to Name	Grand Total (Base)	Grand Total (Purchased)	Status	SKU's	Country	Fraud Estimation	Options	Action
-
-
-
         var processGrid = {
             columns: [
-	            {
+                {
 
-	                name: 'entity_id',
-	                label: 'Order ID',
-	                editable: false,
-	                cell: Backgrid.IntegerCell.extend({
-		                orderSeparator: ''
-		            })
-	            }, 
-				{
-	                name: 'increment_id',
-	                label: 'Increment ID',
-	                editable: false,
-					cell: Backgrid.IntegerCell.extend({
-		                orderSeparator: ''
-		            })
-	            },
-	            {
-	                name: 'status',
-	                label: 'Status',
-	                editable: false,
-	                cell: 'string'
-	            }, 
-	            {
-	                name: 'created_at',
-	                label: 'Created At',
-	                editable: false,
-	                cell: timeDateFormat
-	            },
-				{
-	                name: 'updated_at',
-	                label: 'Updated At',
-	                editable: false,
-	                cell: timeDateFormat
-	            },
-	            {
-	                name: 'base_grand_total',
-	                label: 'Base Grand Total',
-	                editable: false,
-	                cell: 'string'
-	            },
-	            {
-	                name: 'base_total_paid',
-	                label: 'Base Total Paid',
-	                editable: false,
-	                cell: 'string'
-	            }, 
-	            {
-	                name: 'customer_email',
-	                label: 'Customer Email',
-	                editable: false,
-	                cell: 'string'
-	            }
+                    name: 'entity_id',
+                    label: 'Order ID',
+                    editable: false,
+                    cell: Backgrid.IntegerCell.extend({
+                        orderSeparator: ''
+                    })
+                }, 
+                {
+                    name: 'increment_id',
+                    label: 'Increment ID',
+                    editable: false,
+                    cell: Backgrid.IntegerCell.extend({
+                        orderSeparator: ''
+                    })
+                },
+                {
+                    name: 'status',
+                    label: 'Status',
+                    editable: false,
+                    cell: 'string'
+                }, 
+                {
+                    name: 'created_at',
+                    label: 'Created At',
+                    editable: false,
+                    cell: timeDateFormat
+                },
+                {
+                    name: 'updated_at',
+                    label: 'Updated At',
+                    editable: false,
+                    cell: timeDateFormat
+                },
+                {
+                    name: 'base_grand_total',
+                    label: 'Base Grand Total',
+                    editable: false,
+                    cell: 'string'
+                },
+                {
+                    name: 'base_total_paid',
+                    label: 'Base Total Paid',
+                    editable: false,
+                    cell: 'string'
+                }, 
+                {
+                    name: 'customer_email',
+                    label: 'Customer Email',
+                    editable: false,
+                    cell: 'string'
+                }
             ]
         };
 
@@ -150,7 +145,7 @@ define([
                 return config.orderUrl.replace('#####', item.entity_id);
             },
             parseRecords: function(resp, options) {
-            	console.log(resp);
+                console.log(resp);
                 var self = this,
                     newResp = [];
 
@@ -201,10 +196,19 @@ define([
             collection: coll
         });
 
+
+        var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
+          collection: coll,
+          name: "keyword",
+          placeholder: "ex: name, email or increment id" 
+        });
+
         // grid.sort('entity_id', 'descending');
 
         $('#grid-wrapper').html(grid.render().el);
         $('#grid-paginator').html(paginator.render().el);
+
+        $("#grid-wrapper").before(serverSideFilter.render().el);
 
         coll.fetch();
 

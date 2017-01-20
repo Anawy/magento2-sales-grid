@@ -40,19 +40,33 @@ class OrderList extends \Magento\Framework\App\Action\Action
       $page = $this->getRequest()->getParam('page');
       $sortBy = ($this->getRequest()->getParam('sort_by'))? $this->getRequest()->getParam('sort_by') : 'created_at';
       $orderBy = ($this->getRequest()->getParam('order'))? $this->getRequest()->getParam('order') : 'DESC';
-
       $keyword = $this->getRequest()->getParam('keyword');
 
-      
+      if($keyword){
+        $filters[] = $this->filterBuilder->setField('increment_id')
+          ->setValue($keyword)
+          ->setConditionType('like')
+          ->create();
+        $filters[] = $this->filterBuilder->setField('customer_email')
+          ->setValue($keyword)
+          ->setConditionType('like')
+          ->create();
+        $filters[] = $this->filterBuilder->setField('customer_firstname')
+          ->setValue($keyword)
+          ->setConditionType('like')
+          ->create();
 
-      $count = 0;
+        $filters[] = $this->filterBuilder->setField('customer_lastname')
+          ->setValue($keyword)
+          ->setConditionType('like')
+          ->create();
 
-      // if(){
-      $filters[] = $this->filterBuilder->setField('entity_id')
-        ->setValue(0)
-        ->setConditionType('gt')
-        ->create();
-
+      }else{
+        $filters[] = $this->filterBuilder->setField('entity_id')
+          ->setValue(0)
+          ->setConditionType('gt')
+          ->create();
+      }
 
       $sortOrder = $this->sortOrderBuilder
             ->setField($sortBy)
@@ -60,24 +74,20 @@ class OrderList extends \Magento\Framework\App\Action\Action
             ->create();
       
 
-// https://github.com/thejinxters/magento2-testing/blob/master/lib/internal/Magento/Framework/Api/SearchCriteriaBuilder.php
-
       $searchCriteria = $this->searchCriteriaBuilder
                             ->setPageSize($perPage)
                             ->setCurrentPage($page)
                             ->addSortOrder($sortOrder)
                             ->addFilters($filters)
                             ->create();
-      // setSortOrders
-      //$searchCriteria = $this->searchCriteriaBuilder->create();
+
       $list = $this->orderRepository->getList($searchCriteria);  
       $totalCount = $list->getSize();
       return array(
         'data'=> $list->getData(),
-        'total_count' => $totalCount,//count($list)
+        'total_count' => $totalCount,
         'total_pages' => ceil($totalCount/$perPage)
       );
-        //echo  $this->orderRepository->getSize();
 
     }
 }
