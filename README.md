@@ -12,7 +12,6 @@
 - Magento 2
 
 ## Install from CLI
-- add repro to composer
 ``` 
 composer config repositories.salesgrid path vcs https://github.com/joshspivey/magento2-sales-grid.git 
 composer require JoshSpivey/mage2-sales-grid
@@ -23,7 +22,7 @@ sudo php bin/magento setup:static-content:deploy && sudo php bin/magento indexer
 ```
 
 ## Install from setup
-- You actaully use that? It doesnt work...
+- You actually use that? It doesnt work...
 
 ## To Do
 - Add in all types for orders on client side script.
@@ -32,3 +31,5 @@ sudo php bin/magento setup:static-content:deploy && sudo php bin/magento indexer
 - Add in actions.
 - Add in multi select for actions.
 - Activate CRUD on data in client grid and add CRUD to controller.
+
+## Please Contribute if you want to add any of this functionality I will merge to master. 
