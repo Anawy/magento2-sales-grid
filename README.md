@@ -13,9 +13,9 @@
 
 ## Install from CLI
 ``` 
+cd /path/to/site??????????
 composer config repositories.salesgrid path vcs https://github.com/joshspivey/magento2-sales-grid.git 
 composer require JoshSpivey/mage2-sales-grid
-cd /path/to/site??????????
 php -f bin/magento setup:upgrade
 php bin/magento setup:di:compile
 sudo php bin/magento setup:static-content:deploy && sudo php bin/magento indexer:reindex && sudo php bin/magento cache:clean && sudo php bin/magento cache:flush
