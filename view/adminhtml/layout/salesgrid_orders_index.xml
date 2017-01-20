@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>Sales Grid</title>
+        <css src="JoshSpivey_SalesGrid::css/backgrid.css" />
+        <css src="JoshSpivey_SalesGrid::css/backgrid-paginator.css" />
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="JoshSpivey\SalesGrid\Block\Adminhtml\CustomBlock" name="Overview" template="JoshSpivey_SalesGrid::orderGrid.phtml" />
+        </referenceContainer>
+    </body>
+</page>

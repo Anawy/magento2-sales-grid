@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::system">
+                    <resource id="JoshSpivey_SalesGrid::customMenu" title="Custom Menu">
+                        <resource id="JoshSpivey_SalesGrid::sampleOne" title="One" sortOrder="10" />
+                    </resource>
+                </resource>
+                <!-- You can imagine an other node here:
+                <resource id="Magento_Backend::content">
+                    <resource id="Tym17_AdminSample::things" title="Things" sortOrder="70"/>
+                </resource>
+                -->
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="JoshSpivey_SalesGrid::config" title="AdminSampleConfig" />
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

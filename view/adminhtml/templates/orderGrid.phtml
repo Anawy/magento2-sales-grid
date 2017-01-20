@@ -1,0 +1,11 @@
+<section id="grid-wrapper" class="grid-wrapper"></section>
+<section id="grid-paginator" class="grid-wrapper"></section>
+
+<script>
+require(['magentoGrid'], function(mageGrid){
+	mageGrid.init({
+		gridService: "<?=$this->getUrl('SalesGrid/Orders/OrderList');?>",
+		orderUrl: "<?=$this->getUrl('sales/order/view/order_id/#####');?>"
+	});
+});
+</script>

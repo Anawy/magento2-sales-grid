@@ -1,0 +1,27 @@
+{
+  "name": "JoshSpivey/mage2-sales-grid",
+  "type": "magento2-module",
+  "description": "Sales Grid for magento 2 using backgrid",
+  "keywords": ["Magento2", "Admin", "Backbone", "Backgrid", "Sales Grid", "Order Grid"],
+  "homepage": "https://github.com/joshspivey/",
+  "license": "AFL - Academic Free License (AFL 3.0)",
+  "version": "1.0.0",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Josh Spivey"
+    }
+  ],
+  "require": {
+    "php": "~5.5.0|~5.6.0|~7.0.0",
+    "magento/magento-composer-installer": "*"
+  },
+  "extra": {
+    "map": [
+      [
+        "*",
+        "JoshSpivey/SalesGrid"
+      ]
+    ]
+  }
+}
