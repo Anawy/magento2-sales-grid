@@ -14,6 +14,9 @@ class CustomBlock extends Template
 
     protected $_salesGridModel;
 
+    protected $orderInterface;
+
+
     /**
     * @param Context $context
     * @param array $data
@@ -22,24 +25,36 @@ class CustomBlock extends Template
         Template\Context $context,
         SalesGrid $salesGridModel,
         ConfigHelper $config,
-        array $data = []
+        array $data = [],
+        \Magento\Sales\Api\Data\OrderInterface $orderInterface
     ) {
         parent::__construct($context, $data);
         $this->_config = $config;
         $this->_salesGridModel = $salesGridModel;
+        $this->orderInterface = $orderInterface;
     }
 
-    /**
-     * @return string
-     */
-    public function greet()
-    {
-        return $this->_salesGridModel->getGreetings();
-    }
 
-    public function getSampleText()
+    public function getOrderAttributes()
     {
-        return $this->_salesGridModel->getSampleText();
+        // var_dump($orderInterface->getConstants());
+        $orderReflect = new \ReflectionClass($this->orderInterface);
+
+        // return $fieldset->addField(
+        //     'payment_types',
+        //     'checkboxes',
+        //     [
+        //         'label' => __('Payment Types'),
+        //         'name' => 'payment_types',
+        //         'values' => [
+        //             ['value' => '2','label' => 'Card'],
+        //             ['value' => '3','label' => 'Cash'],
+        //             ['value' => '4','label' => 'Prepaid']
+        //         ],
+        //     ]
+        // );
+
+        return $orderReflect->getConstants();
     }
 
 }

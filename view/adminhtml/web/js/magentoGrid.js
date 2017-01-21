@@ -47,6 +47,11 @@ define([
         var processGrid = {
             columns: [
                 {
+                    name: '',
+                    cell: Backgrid.Extension.SelectRowCell,
+                    headerCell: Backgrid.Extension.SelectAllHeaderCell
+                },
+                {
 
                     name: 'entity_id',
                     label: 'Order ID',
@@ -118,8 +123,6 @@ define([
             totalRecords: null,
             currentPage: 'page',
             pageSize: 'results_per_page'
-            // sort_by: 'created_at',
-            // order: 'DESC'
         };
 
         var MyItems = Backbone.PageableCollection.extend({
