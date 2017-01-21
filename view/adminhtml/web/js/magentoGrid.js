@@ -190,11 +190,7 @@ define([
         });
         var paginator = new Backgrid.Extension.Paginator({
             collection: coll,
-            windowSize: 10,
-            controls: {
-                rewind: null,
-                fastForward: null
-            }
+            windowSize: 10
         });
         var grid = new MyGrid({
             row: ClickableRow,
