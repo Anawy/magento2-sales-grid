@@ -175,8 +175,10 @@ define([
             mouseOut: function() {
                 this.el.style.backgroundColor = "white";
             },
-            clickRow: function() {
-                document.location.href = this.model.get('order_url');
+            clickRow: function(e) {
+                if (e.target.nodeName != 'INPUT'){
+                    document.location.href = this.model.get('order_url');
+                }
             }
         });
 
