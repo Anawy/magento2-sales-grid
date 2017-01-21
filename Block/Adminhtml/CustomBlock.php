@@ -34,11 +34,17 @@ class CustomBlock extends Template
         $this->orderInterface = $orderInterface;
     }
 
+    public function formatText($tmpRecord){
+        $textFormatted = ucwords(str_replace('_', ' ', $tmpRecord));
+        return [$tmpRecord => $textFormatted];
+    }
 
     public function getOrderAttributes()
     {
         // var_dump($orderInterface->getConstants());
         $orderReflect = new \ReflectionClass($this->orderInterface);
+
+        $formattedAttributes = array_map(array($this, 'formatText'), $orderReflect->getConstants());
 
         // return $fieldset->addField(
         //     'payment_types',
@@ -54,7 +60,7 @@ class CustomBlock extends Template
         //     ]
         // );
 
-        return $orderReflect->getConstants();
+        return $formattedAttributes;
     }
 
 }
