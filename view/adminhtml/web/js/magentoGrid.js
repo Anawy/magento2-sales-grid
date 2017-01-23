@@ -27,13 +27,10 @@ define([
         });
 
         var HtmlCell = Backgrid.HtmlCell = Backgrid.Cell.extend({
-            /** @property */
             className: "html-cell",
-
             initialize: function() {
                 Backgrid.Cell.prototype.initialize.apply(this, arguments);
             },
-
             render: function() {
                 this.$el.empty();
                 var rawValue = this.model.get(this.column.get("name"));
@@ -52,7 +49,6 @@ define([
                     headerCell: Backgrid.Extension.SelectAllHeaderCell
                 },
                 {
-
                     name: 'entity_id',
                     label: 'Order ID',
                     editable: false,
@@ -153,10 +149,7 @@ define([
                     newResp = [];
 
                 _.each(resp.data, function(item) {
-                    // item.entity_id = self.formatUrl(item);
                     item.order_url = self.formatUrl(item);
-                    item.entity_id = Number(item.entity_id);
-                    item.increment_id = Number(item.increment_id);
                     newResp.push(item);
                 });
 

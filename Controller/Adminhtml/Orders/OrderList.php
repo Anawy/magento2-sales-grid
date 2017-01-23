@@ -31,7 +31,12 @@ class OrderList extends \Magento\Framework\App\Action\Action
 
     public function execute()
     {
-      return  $this->resultJsonFactory->create()->setData($this->getOrders());
+
+      header('Content-Type: application/json');
+      echo json_encode($this->getOrders(),  JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+      //use json encode until they fix the number type casting in the mage 2 json factory
+      //see issue for updates https://github.com/magento/magento2/issues/8244
+      // return  $this->resultJsonFactory->create()->setData($this->getOrders());
     }
 
     public function getOrders()
