@@ -18,48 +18,14 @@ define([
     backgrid,
     backboneForms
 ) {
-    // console.log('backboneForms: ',backboneForms);
+
     var MageGrid = {};
+
     MageGrid.init = function(config) {
 
-        var GridAttributeModel = Backbone.Model.extend({
-            urlRoot: config.gridAttribService
-        });
-
-        var GridAttributeCol = Backbone.PageableCollection.extend({
-            model: GridAttributeModel,
-            url: config.gridAttribService
-        });
-
-        var gridAttr = new GridAttributeCol();
-
-        var loadForm = function() {
-            var GridFields = Backbone.Model.extend({
-                schema: {
-                    Grid: {
-                        type: 'Checkboxes',
-                        options: gridAttr.toJSON()
-                    }
-                }
-            });
-            var gFields = new GridFields();
-            var form = new Backbone.Form({
-                model: gFields
-            }).render();
-            $('#grid-fields').append(form.el);
-
-            $('[name="Grid"] input').on('change', function(tmpElm){
-                var tmpVal = $(tmpElm.target).val();
-                console.log('change ',tmpVal);
-            });
-        };
-
-        gridAttr.on('sync', function(colData) {
-            loadForm();
-        });
-
-        gridAttr.fetch();
-
+        var defaultColumns = [
+            'entity_id', 'increment_id', 'status', 'created_at', 'updated_at', 'base_grand_total', 'base_total_paid', 'customer_email'
+        ];
 
         var timeDateFormat = Backgrid.Extension.MomentCell.extend({
             modelInUTC: true,
@@ -83,88 +49,36 @@ define([
             }
         });
 
-        var processGrid = {
-            columns: [{
-                name: '',
-                cell: Backgrid.Extension.SelectRowCell,
-                headerCell: Backgrid.Extension.SelectAllHeaderCell
-            }, {
-                name: 'entity_id',
-                label: 'Order ID',
-                editable: false,
-                cell: Backgrid.IntegerCell.extend({
-                    orderSeparator: ''
-                })
-            }, {
-                name: 'increment_id',
-                label: 'Increment ID',
-                editable: false,
-                cell: Backgrid.IntegerCell.extend({
-                    orderSeparator: ''
-                })
-            }, {
-                name: 'status',
-                label: 'Status',
-                editable: false,
-                cell: 'string'
-            }, {
-                name: 'created_at',
-                label: 'Created At',
-                editable: false,
-                cell: timeDateFormat
-            }, {
-                name: 'updated_at',
-                label: 'Updated At',
-                editable: false,
-                cell: timeDateFormat
-            }, {
-                name: 'base_grand_total',
-                label: 'Base Grand Total',
-                editable: false,
-                cell: 'string'
-            }, {
-                name: 'base_total_paid',
-                label: 'Base Total Paid',
-                editable: false,
-                cell: 'string'
-            }, {
-                name: 'customer_email',
-                label: 'Customer Email',
-                editable: false,
-                cell: 'string'
-            }]
-        };
 
-        var MyGrid = Backgrid.Grid.extend(processGrid);
+        var GridAttributeModel = Backbone.Model.extend({
+            urlRoot: config.gridAttribService
+        });
 
-        var MyItem = Backbone.Model.extend({
+        var GridAttributeCol = Backbone.PageableCollection.extend({
+            model: GridAttributeModel,
+            url: config.gridAttribService
+        });
+
+        var PageModel = Backbone.Model.extend({
             defaults: {
                 checked: false,
                 title: 'Untitled'
             }
         });
 
-
-
-        var queryObj = {
-            totalPages: null,
-            totalRecords: null,
-            currentPage: 'page',
-            pageSize: 'results_per_page'
-        };
-
-        var MyItems = Backbone.PageableCollection.extend({
+        var PagingCol = Backbone.PageableCollection.extend({
             url: config.gridService,
-
-            queryParams: queryObj,
-
+            queryParams: {
+                totalPages: null,
+                totalRecords: null,
+                currentPage: 'page',
+                pageSize: 'results_per_page'
+            },
             state: {
                 pageSize: 20,
                 totalRecords: null
             },
-
             mode: 'server',
-
             parseState: function(resp, queryParams, state, options) {
                 // console.log(resp);
                 return {
@@ -210,33 +124,143 @@ define([
             }
         });
 
-        var coll = new MyItems({
-            model: new MyItem()
+        var GridView = Backbone.View.extend({
+            el: "#gridContainer",
+            events: {
+                "change #grid-fields input": "gridFieldsHandler",
+                "change #grid-fields select": "perPageHandler"
+            },
+            perPage: [10, 20, 50, 100, 200],
+            activeColumns: defaultColumns,
+            perPageHandler: function(evt){
+                console.log('evt: ',$(evt.target).val());
+            },
+            gridFieldsHandler: function(evt){
+                this.generateColumns($(evt.target).val());
+                this.render();
+            },
+            initialize: function() {
+                var self = this;
+
+                this.collection.gridAttr.on('sync', function(colData) {
+                    self.generateColumns();
+                    self.loadForm();
+                    self.render();
+                });
+
+                this.collection.gridAttr.fetch();
+            },
+            loadForm: function() {
+                var GridFields = Backbone.Model.extend({
+                    schema: {
+                        PerPage: {
+                            type: 'Select',
+                            options: this.perPage
+                        },
+                        GridFields: {
+                            type: 'Checkboxes',
+                            options: this.collection.gridAttr.toJSON()
+                        }
+                    }
+                });
+                var gFields = new GridFields();
+                var form = new Backbone.Form({
+                    model: gFields
+                }).render();
+                $('#grid-fields').append(form.el);
+
+            },
+            generateColumns: function(colName = ''){
+                var self = this;
+                if(!_.contains(this.activeColumns, colName)){
+                    this.activeColumns.push(colName);
+                }else{
+                    this.activeColumns = _.without(this.activeColumns, colName);
+                }
+                
+                this.columnArr = [{
+                    name: '',
+                    cell: Backgrid.Extension.SelectRowCell,
+                    headerCell: Backgrid.Extension.SelectAllHeaderCell
+                }];
+
+                _.each(this.activeColumns, function(tmpVal){
+                    var tmpObj = {
+                        name: tmpVal,
+                        label: tmpVal,
+                        editable: false
+                    };
+                    switch(tmpVal){
+                        case "entity_id":
+                            tmpObj['cell'] = Backgrid.IntegerCell.extend({orderSeparator: ''});
+                        break;
+                        case "increment_id":
+                            tmpObj['cell'] = Backgrid.IntegerCell.extend({orderSeparator: ''});
+                        break;
+                        case "created_at":
+                            tmpObj['cell'] = timeDateFormat;
+                        break;
+                        case "updated_at":
+                            tmpObj['cell'] = timeDateFormat;
+                        break;
+                        default: 
+                            tmpObj['cell'] = 'string';
+                        break;   
+                    }
+                        self.columnArr.push(tmpObj);   
+                });
+            },
+            render: function() {
+
+                $('#grid-wrapper').html("");
+                $('#grid-paginator').html("");
+                $('.form-search').remove();
+
+                var MyGrid = Backgrid.Grid.extend({
+                    columns: this.columnArr
+                });
+
+                var paginator = new Backgrid.Extension.Paginator({
+                    collection: this.collection.pagingCol,
+                    windowSize: 10
+                });
+
+                var grid = new MyGrid({
+                    row: ClickableRow,
+                    collection: this.collection.pagingCol
+                });
+
+                var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
+                    collection: this.collection.pagingCol,
+                    name: "keyword",
+                    placeholder: "ex: name, email or increment id"
+                });
+
+                // grid.sort('entity_id', 'descending');
+
+                $('#grid-wrapper').html(grid.render().el);
+                $('#grid-paginator').html(paginator.render().el);
+
+                $("#grid-wrapper").before(serverSideFilter.render().el);
+
+                this.collection.pagingCol.fetch();
+            }
+
         });
-        var paginator = new Backgrid.Extension.Paginator({
-            collection: coll,
-            windowSize: 10
-        });
-        var grid = new MyGrid({
-            row: ClickableRow,
-            collection: coll
+
+
+        var gridAttr = new GridAttributeCol();
+        var pagingCol = new PagingCol({
+            model: new PageModel()
         });
 
-
-        var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
-            collection: coll,
-            name: "keyword",
-            placeholder: "ex: name, email or increment id"
+        new GridView({
+            collection: {
+                gridAttr: gridAttr,
+                pagingCol: pagingCol
+            }
         });
 
-        // grid.sort('entity_id', 'descending');
-
-        $('#grid-wrapper').html(grid.render().el);
-        $('#grid-paginator').html(paginator.render().el);
-
-        $("#grid-wrapper").before(serverSideFilter.render().el);
-
-        coll.fetch();
 
     };
 

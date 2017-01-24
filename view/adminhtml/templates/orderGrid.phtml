@@ -4,19 +4,21 @@
 ?>
 
 <style type="text/css">
-	[name="Grid"] li{
+	#grid-fields li{
 		list-style: none;
 		float: left;
 	}
-	[name="Grid"] li label{
+	#grid-fields li label{
 		padding: 5px;
 	}
 
 </style>
 
-<section id="grid-fields"></section>
-<section id="grid-wrapper" class="grid-wrapper"></section>
-<section id="grid-paginator" class="grid-wrapper"></section>
+<div id="gridContainer">
+	<section id="grid-fields"></section>
+	<section id="grid-wrapper" class="grid-wrapper"></section>
+	<section id="grid-paginator" class="grid-wrapper"></section>
+</div>
 
 <script>
 require(['magentoGrid'], function(mageGrid){
