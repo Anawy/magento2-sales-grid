@@ -3,20 +3,62 @@ define([
     "underscore",
     "backbone",
     'backgrid',
+    'backboneForms',
     'backbone.paginator',
     'backgrid-paginator',
     'moment',
     'backgridFilter',
     'backgridSelectAll',
-    'backgridMomentCell',
+    'backgridMomentCell'
+
 ], function(
     $,
     _,
     backbone,
-    backgrid
+    backgrid,
+    backboneForms
 ) {
+    // console.log('backboneForms: ',backboneForms);
     var MageGrid = {};
     MageGrid.init = function(config) {
+
+        var GridAttributeModel = Backbone.Model.extend({
+            urlRoot: config.gridAttribService
+        });
+
+        var GridAttributeCol = Backbone.PageableCollection.extend({
+            model: GridAttributeModel,
+            url: config.gridAttribService
+        });
+
+        var gridAttr = new GridAttributeCol();
+
+        var loadForm = function() {
+            var GridFields = Backbone.Model.extend({
+                schema: {
+                    Grid: {
+                        type: 'Checkboxes',
+                        options: gridAttr.toJSON()
+                    }
+                }
+            });
+            var gFields = new GridFields();
+            var form = new Backbone.Form({
+                model: gFields
+            }).render();
+            $('#grid-fields').append(form.el);
+
+            $('[name="Grid"] input').on('change', function(tmpElm){
+                var tmpVal = $(tmpElm.target).val();
+                console.log('change ',tmpVal);
+            });
+        };
+
+        gridAttr.on('sync', function(colData) {
+            loadForm();
+        });
+
+        gridAttr.fetch();
 
 
         var timeDateFormat = Backgrid.Extension.MomentCell.extend({
@@ -42,65 +84,55 @@ define([
         });
 
         var processGrid = {
-            columns: [
-                {
-                    name: '',
-                    cell: Backgrid.Extension.SelectRowCell,
-                    headerCell: Backgrid.Extension.SelectAllHeaderCell
-                },
-                {
-                    name: 'entity_id',
-                    label: 'Order ID',
-                    editable: false,
-                    cell: Backgrid.IntegerCell.extend({
-                        orderSeparator: ''
-                    })
-                }, 
-                {
-                    name: 'increment_id',
-                    label: 'Increment ID',
-                    editable: false,
-                    cell: Backgrid.IntegerCell.extend({
-                        orderSeparator: ''
-                    })
-                },
-                {
-                    name: 'status',
-                    label: 'Status',
-                    editable: false,
-                    cell: 'string'
-                }, 
-                {
-                    name: 'created_at',
-                    label: 'Created At',
-                    editable: false,
-                    cell: timeDateFormat
-                },
-                {
-                    name: 'updated_at',
-                    label: 'Updated At',
-                    editable: false,
-                    cell: timeDateFormat
-                },
-                {
-                    name: 'base_grand_total',
-                    label: 'Base Grand Total',
-                    editable: false,
-                    cell: 'string'
-                },
-                {
-                    name: 'base_total_paid',
-                    label: 'Base Total Paid',
-                    editable: false,
-                    cell: 'string'
-                }, 
-                {
-                    name: 'customer_email',
-                    label: 'Customer Email',
-                    editable: false,
-                    cell: 'string'
-                }
-            ]
+            columns: [{
+                name: '',
+                cell: Backgrid.Extension.SelectRowCell,
+                headerCell: Backgrid.Extension.SelectAllHeaderCell
+            }, {
+                name: 'entity_id',
+                label: 'Order ID',
+                editable: false,
+                cell: Backgrid.IntegerCell.extend({
+                    orderSeparator: ''
+                })
+            }, {
+                name: 'increment_id',
+                label: 'Increment ID',
+                editable: false,
+                cell: Backgrid.IntegerCell.extend({
+                    orderSeparator: ''
+                })
+            }, {
+                name: 'status',
+                label: 'Status',
+                editable: false,
+                cell: 'string'
+            }, {
+                name: 'created_at',
+                label: 'Created At',
+                editable: false,
+                cell: timeDateFormat
+            }, {
+                name: 'updated_at',
+                label: 'Updated At',
+                editable: false,
+                cell: timeDateFormat
+            }, {
+                name: 'base_grand_total',
+                label: 'Base Grand Total',
+                editable: false,
+                cell: 'string'
+            }, {
+                name: 'base_total_paid',
+                label: 'Base Total Paid',
+                editable: false,
+                cell: 'string'
+            }, {
+                name: 'customer_email',
+                label: 'Customer Email',
+                editable: false,
+                cell: 'string'
+            }]
         };
 
         var MyGrid = Backgrid.Grid.extend(processGrid);
@@ -172,7 +204,7 @@ define([
                 this.el.style.backgroundColor = "white";
             },
             clickRow: function(e) {
-                if (e.target.nodeName != 'INPUT'){
+                if (e.target.nodeName != 'INPUT') {
                     document.location.href = this.model.get('order_url');
                 }
             }
@@ -192,9 +224,9 @@ define([
 
 
         var serverSideFilter = new Backgrid.Extension.ServerSideFilter({
-          collection: coll,
-          name: "keyword",
-          placeholder: "ex: name, email or increment id" 
+            collection: coll,
+            name: "keyword",
+            placeholder: "ex: name, email or increment id"
         });
 
         // grid.sort('entity_id', 'descending');

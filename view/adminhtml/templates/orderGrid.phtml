@@ -1,7 +1,20 @@
 
 <?php 
-	echo var_dump($block->getOrderAttributes());
+	//echo var_dump($block->getOrderAttributes());
 ?>
+
+<style type="text/css">
+	[name="Grid"] li{
+		list-style: none;
+		float: left;
+	}
+	[name="Grid"] li label{
+		padding: 5px;
+	}
+
+</style>
+
+<section id="grid-fields"></section>
 <section id="grid-wrapper" class="grid-wrapper"></section>
 <section id="grid-paginator" class="grid-wrapper"></section>
 
@@ -9,7 +22,8 @@
 require(['magentoGrid'], function(mageGrid){
 	mageGrid.init({
 		gridService: "<?=$this->getUrl('SalesGrid/Orders/OrderList');?>",
-		orderUrl: "<?=$this->getUrl('sales/order/view/order_id/#####');?>"
+		orderUrl: "<?=$this->getUrl('sales/order/view/order_id/#####');?>",
+		gridAttribService: "<?=$this->getUrl('SalesGrid/Orders/GridFields');?>"
 	});
 });
 </script>
