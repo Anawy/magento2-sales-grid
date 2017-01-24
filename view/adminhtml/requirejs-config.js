@@ -9,7 +9,8 @@ var config = {
             'magentoGrid': 'JoshSpivey_SalesGrid/js/magentoGrid',
             'backgridFilter': 'JoshSpivey_SalesGrid/js/backgrid-filter',
             'backgridSelectAll': 'JoshSpivey_SalesGrid/js/backgrid-select-all',
-            'backgridMomentCell': 'JoshSpivey_SalesGrid/js/backgrid-moment-cell.min'
+            'backgridMomentCell': 'JoshSpivey_SalesGrid/js/backgrid-moment-cell.min',
+            'backboneForms': 'JoshSpivey_SalesGrid/js/backbone-forms.min'
     }
     
 };
