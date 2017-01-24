@@ -128,7 +128,8 @@ define([
             el: "#gridContainer",
             events: {
                 "change #grid-fields input": "gridFieldsHandler",
-                "change #grid-fields select": "perPageHandler"
+                "change #grid-fields select": "perPageHandler",
+                "click #showHide": "showHideOptions"
             },
             perPage: [10, 20, 50, 100, 200],
             activeColumns: defaultColumns,
@@ -142,6 +143,8 @@ define([
             initialize: function() {
                 var self = this;
 
+                $("#grid-fields").hide();
+
                 this.collection.gridAttr.on('sync', function(colData) {
                     self.generateColumns();
                     self.loadForm();
@@ -149,6 +152,9 @@ define([
                 });
 
                 this.collection.gridAttr.fetch();
+            },
+            showHideOptions: function(){
+                $("#grid-fields").toggle();
             },
             loadForm: function() {
                 var GridFields = Backbone.Model.extend({

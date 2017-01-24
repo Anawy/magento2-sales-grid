@@ -11,11 +11,25 @@
 	#grid-fields li label{
 		padding: 5px;
 	}
+	.form-search, #showHide{
+		display: inline-block; 
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+
+	.form-search input{
+	    height: 45px;
+	    width: 330px;
+	    font-size: 20px;
+	}
+
 
 </style>
 
 <div id="gridContainer">
+	<a href="javascript:void(0);" id="showHide">SHOW/HIDE GRID OPTIONS</a>
 	<section id="grid-fields"></section>
+	<div>Search</div>
 	<section id="grid-wrapper" class="grid-wrapper"></section>
 	<section id="grid-paginator" class="grid-wrapper"></section>
 </div>
