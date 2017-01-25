@@ -134,11 +134,15 @@ define([
             perPage: [10, 20, 50, 100, 200],
             activeColumns: defaultColumns,
             perPageHandler: function(evt){
-                console.log('evt: ',$(evt.target).val());
+                // console.log('evt: ',Math.floor($(evt.target).val()));
+                this.collection.pagingCol.setPageSize(Number($(evt.target).val()));
+                //this.render();
             },
             gridFieldsHandler: function(evt){
                 this.generateColumns($(evt.target).val());
-                this.render();
+                this.collection.pagingCol.fetch({reset: true});
+                this.addRemoveColumns();
+                // this.render();
             },
             initialize: function() {
                 var self = this;
@@ -149,14 +153,22 @@ define([
                     self.generateColumns();
                     self.loadForm();
                     self.render();
+                    self.setDefaultForm();
                 });
 
                 this.collection.gridAttr.fetch();
+            },
+            setDefaultForm: function(){
+                _.each(defaultColumns, function(tmpColumn){
+                    $('[name="GridFields"][value="'+tmpColumn+'"]').prop('checked', true);
+                });
+                $('[name="PerPage"]').val(20);
             },
             showHideOptions: function(){
                 $("#grid-fields").toggle();
             },
             loadForm: function() {
+                console.log(this.collection.gridAttr.toJSON());
                 var GridFields = Backbone.Model.extend({
                     schema: {
                         PerPage: {
@@ -175,6 +187,15 @@ define([
                 }).render();
                 $('#grid-fields').append(form.el);
 
+            },
+            addRemoveColumns: function(){
+                var self = this;
+
+                this.grid.columns.reset();
+
+                _.each(this.columnArr, function(tmpVal){
+                    self.grid.insertColumn(tmpVal);
+                });
             },
             generateColumns: function(colName = ''){
                 var self = this;
@@ -213,7 +234,7 @@ define([
                             tmpObj['cell'] = 'string';
                         break;   
                     }
-                        self.columnArr.push(tmpObj);   
+                    self.columnArr.push(tmpObj);   
                 });
             },
             render: function() {
@@ -231,7 +252,7 @@ define([
                     windowSize: 10
                 });
 
-                var grid = new MyGrid({
+                this.grid = new MyGrid({
                     row: ClickableRow,
                     collection: this.collection.pagingCol
                 });
@@ -244,7 +265,7 @@ define([
 
                 // grid.sort('entity_id', 'descending');
 
-                $('#grid-wrapper').html(grid.render().el);
+                $('#grid-wrapper').html(this.grid.render().el);
                 $('#grid-paginator').html(paginator.render().el);
 
                 $("#grid-wrapper").before(serverSideFilter.render().el);
