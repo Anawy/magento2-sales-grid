@@ -1,6 +1,6 @@
 
 <?php 
-	//echo var_dump($block->getOrderAttributes());
+	// echo var_dump($block->getButtonList());
 ?>
 
 <style type="text/css">
@@ -23,23 +23,84 @@
 	    font-size: 20px;
 	}
 
+	fieldset{
+		border: none;
+	}
 
 </style>
 
 <div id="gridContainer">
 	<a href="javascript:void(0);" id="showHide">SHOW/HIDE GRID OPTIONS</a>
 	<section id="grid-fields"></section>
+	<section id="grid-actions"></section>
 	<div>Search</div>
 	<section id="grid-wrapper" class="grid-wrapper"></section>
 	<section id="grid-paginator" class="grid-wrapper"></section>
 </div>
 
 <script>
+
+    var massActions = [
+        {
+            val: "",
+            label: "--- SELECT AN ACTION ---",
+            url: ""
+        },
+        {
+            val: "cancel",
+            label: "Cancel",
+            url: "sales/order/massCancel"
+        },
+        {
+            val: "hold_order",
+            label: "Hold",
+            url: "sales/order/massHold"
+        },
+        {
+            val: "unhold_order",
+            label: "Unhold",
+            url: "sales/order/massUnhold"
+        },
+        {
+            val: "pdfinvoices_order",
+            label: "Print Invoices",
+            url: "sales/order/pdfinvoices"
+        },
+        {
+            val: "pdfshipments_order",
+            label: "Print Packing Slips",
+            url: "sales/order/pdfshipments"
+        },
+        {
+            val: "pdfcreditmemos_order",
+            label: "Print Credit Memos",
+            url: "sales/order/pdfcreditmemos"
+        },
+        {
+            val: "pdfdocs_order",
+            label: "Print All",
+            url: "sales/order/pdfdocs"
+        },
+        {
+            val: "print_shipping_label",
+            label: "Print Shipping Labels",
+            url: "adminhtml/order_shipment/massPrintShippingLabel"
+        }
+    ];
+
+    var defaultColumns = [
+        'entity_id', 'increment_id', 'status', 'created_at', 'updated_at', 'base_grand_total', 'base_total_paid', 'customer_email'
+    ];
+
 require(['magentoGrid'], function(mageGrid){
 	mageGrid.init({
 		gridService: "<?=$this->getUrl('SalesGrid/Orders/OrderList');?>",
 		orderUrl: "<?=$this->getUrl('sales/order/view/order_id/#####');?>",
-		gridAttribService: "<?=$this->getUrl('SalesGrid/Orders/GridFields');?>"
+		gridAttribService: "<?=$this->getUrl('SalesGrid/Orders/GridFields');?>",
+		massActions: massActions,
+		defaultColumns: defaultColumns,
+		defaultPerPage: 20,
+		perPage: [10, 20, 50, 100, 200]
 	});
 });
 </script>

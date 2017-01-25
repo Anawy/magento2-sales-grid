@@ -21,11 +21,8 @@ define([
 
     var MageGrid = {};
 
-    MageGrid.init = function(config) {
 
-        var defaultColumns = [
-            'entity_id', 'increment_id', 'status', 'created_at', 'updated_at', 'base_grand_total', 'base_total_paid', 'customer_email'
-        ];
+    MageGrid.init = function(config) {
 
         var timeDateFormat = Backgrid.Extension.MomentCell.extend({
             modelInUTC: true,
@@ -80,7 +77,6 @@ define([
             },
             mode: 'server',
             parseState: function(resp, queryParams, state, options) {
-                // console.log(resp);
                 return {
                     totalRecords: resp.total_count,
                     totalPages: resp.total_pages
@@ -90,7 +86,6 @@ define([
                 return config.orderUrl.replace('#####', item.entity_id);
             },
             parseRecords: function(resp, options) {
-                console.log(resp);
                 var self = this,
                     newResp = [];
 
@@ -99,7 +94,6 @@ define([
                     newResp.push(item);
                 });
 
-                // return newResp;
                 return newResp;
             }
         });
@@ -118,7 +112,7 @@ define([
                 this.el.style.backgroundColor = "white";
             },
             clickRow: function(e) {
-                if (e.target.nodeName != 'INPUT') {
+                if (e.target.nodeName != 'INPUT' || e.target.nodeName != 'SELECT') {
                     document.location.href = this.model.get('order_url');
                 }
             }
@@ -131,18 +125,15 @@ define([
                 "change #grid-fields select": "perPageHandler",
                 "click #showHide": "showHideOptions"
             },
-            perPage: [10, 20, 50, 100, 200],
-            activeColumns: defaultColumns,
+            perPage: config.perPage,
+            activeColumns: config.defaultColumns,
             perPageHandler: function(evt){
-                // console.log('evt: ',Math.floor($(evt.target).val()));
                 this.collection.pagingCol.setPageSize(Number($(evt.target).val()));
-                //this.render();
             },
             gridFieldsHandler: function(evt){
                 this.generateColumns($(evt.target).val());
                 this.collection.pagingCol.fetch({reset: true});
                 this.addRemoveColumns();
-                // this.render();
             },
             initialize: function() {
                 var self = this;
@@ -158,11 +149,18 @@ define([
 
                 this.collection.gridAttr.fetch();
             },
+            massActionOptions: function(){
+                var tmpArr = [];
+                _.each(config.massActions, function(tmpObj){
+                    tmpArr.push([tmpObj.label, tmpObj.val]);
+                });
+                return tmpArr;
+            },
             setDefaultForm: function(){
-                _.each(defaultColumns, function(tmpColumn){
+                _.each(config.defaultColumns, function(tmpColumn){
                     $('[name="GridFields"][value="'+tmpColumn+'"]').prop('checked', true);
                 });
-                $('[name="PerPage"]').val(20);
+                $('[name="PerPage"]').val(config.defaultPerPage);
             },
             showHideOptions: function(){
                 $("#grid-fields").toggle();
@@ -174,7 +172,7 @@ define([
                 })
             },
             loadForm: function() {
-                // console.log(this.collection.gridAttr.toJSON());
+                console.log(this.collection.gridAttr.toJSON());
                 var GridFields = Backbone.Model.extend({
                     schema: {
                         PerPage: {
@@ -192,6 +190,21 @@ define([
                     model: gFields
                 }).render();
                 $('#grid-fields').append(form.el);
+
+
+                var ActionFields = Backbone.Model.extend({
+                    schema: {
+                        MassActions: {
+                            type: 'Select',
+                            options: config.massActions
+                        }
+                    }
+                });
+                var aFields = new ActionFields();
+                var form = new Backbone.Form({
+                    model: aFields
+                }).render();
+                $('#grid-actions').append(form.el);
 
             },
             addRemoveColumns: function(){
@@ -217,11 +230,12 @@ define([
                     headerCell: Backgrid.Extension.SelectAllHeaderCell
                 }];
 
+                var massOptions = this.massActionOptions();
+
                 _.each(this.activeColumns, function(tmpVal){
                     var tmpObj = {
                         name: tmpVal,
                         label: self.ucwords(tmpVal.replace(/_/g, " ")),
-                        //self.collection.gridAttr.where({val: tmpVal}).get("label"),
                         editable: false
                     };
                     switch(tmpVal){
@@ -249,7 +263,7 @@ define([
                     name: "action",
                     label: "Action",
                     cell: Backgrid.SelectCell.extend({
-                      optionValues: [["Male", "m"], ["Female", "f"]]
+                        optionValues: massOptions
                     })
                 });
             },
