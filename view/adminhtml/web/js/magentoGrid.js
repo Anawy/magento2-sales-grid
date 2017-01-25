@@ -167,8 +167,14 @@ define([
             showHideOptions: function(){
                 $("#grid-fields").toggle();
             },
+            ucwords: function(str) {
+              return (str + '')
+                .replace(/^([a-z\u00E0-\u00FC])|\s+([a-z\u00E0-\u00FC])/g, function ($1) {
+                  return $1.toUpperCase()
+                })
+            },
             loadForm: function() {
-                console.log(this.collection.gridAttr.toJSON());
+                // console.log(this.collection.gridAttr.toJSON());
                 var GridFields = Backbone.Model.extend({
                     schema: {
                         PerPage: {
@@ -214,7 +220,8 @@ define([
                 _.each(this.activeColumns, function(tmpVal){
                     var tmpObj = {
                         name: tmpVal,
-                        label: tmpVal,
+                        label: self.ucwords(tmpVal.replace(/_/g, " ")),
+                        //self.collection.gridAttr.where({val: tmpVal}).get("label"),
                         editable: false
                     };
                     switch(tmpVal){
@@ -234,7 +241,16 @@ define([
                             tmpObj['cell'] = 'string';
                         break;   
                     }
+
                     self.columnArr.push(tmpObj);   
+                });
+
+                this.columnArr.push({
+                    name: "action",
+                    label: "Action",
+                    cell: Backgrid.SelectCell.extend({
+                      optionValues: [["Male", "m"], ["Female", "f"]]
+                    })
                 });
             },
             render: function() {
