@@ -3,6 +3,10 @@
 ## This grid was made to fix the XML bug / limitation on magento 2.
 - https://github.com/magento/magento2/issues/8084
 
+![Image of Sales Grid](salesGrid.jpg)
+
+
+![Image of Sales Grid Options](gridOptions.jpg)
 ## Tech
 - Backbone
 - Backgrid
