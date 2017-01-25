@@ -29,11 +29,11 @@ sudo php bin/magento setup:static-content:deploy && sudo php bin/magento indexer
 - You actually use that? It doesnt work...
 
 ## To Do
-- Add in all types for orders on client side script.
-- Add in admin page to dynamically add columns based on order data.
-- Add in ability to change record QTY per page.
+- ~~Add in all types for orders on client side script.~~
+- ~~Add in admin page to dynamically add columns based on order data.~~
+- ~~Add in ability to change record QTY per page.~~
 - Add in actions.
-- Add in multi select for actions.
+- ~~Add in multi select for actions.~~
 - Activate CRUD on data in client grid and add CRUD to controller.
 
 ## Please Contribute if you want to add any of this functionality I will merge to master. 
