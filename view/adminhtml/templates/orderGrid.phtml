@@ -16,11 +16,27 @@
 		padding-top: 5px;
 		padding-bottom: 5px;
 	}
+	#showHide{
+		float: right;
+    	margin-top: 13px;
+    	 margin-left: 11px;
+	}
 
 	.form-search input{
 	    height: 45px;
 	    width: 330px;
 	    font-size: 20px;
+	}
+
+	#grid-actions [data-fieldsets]{
+		float: left;
+	}
+	#grid-actions button{
+		float: left;
+		margin-top: 19px;
+	}
+	#searchContainer{
+		float: right;
 	}
 
 	fieldset{
@@ -32,8 +48,10 @@
 <div id="gridContainer">
 	<a href="javascript:void(0);" id="showHide">SHOW/HIDE GRID OPTIONS</a>
 	<section id="grid-fields"></section>
+	<section id="searchContainer">
+		<span id="searchTitle">Search</span>
+	</section>
 	<section id="grid-actions"></section>
-	<div>Search</div>
 	<section id="grid-wrapper" class="grid-wrapper"></section>
 	<section id="grid-paginator" class="grid-wrapper"></section>
 </div>
@@ -49,42 +67,42 @@
         {
             val: "cancel",
             label: "Cancel",
-            url: "sales/order/massCancel"
+            url: "<?=$this->getUrl('sales/order/massCancel');?>"
         },
         {
             val: "hold_order",
             label: "Hold",
-            url: "sales/order/massHold"
+            url: "<?=$this->getUrl('sales/order/massHold');?>"
         },
         {
             val: "unhold_order",
             label: "Unhold",
-            url: "sales/order/massUnhold"
+            url: "<?=$this->getUrl('sales/order/massUnhold');?>"
         },
         {
             val: "pdfinvoices_order",
             label: "Print Invoices",
-            url: "sales/order/pdfinvoices"
+            url: "<?=$this->getUrl('sales/order/pdfinvoices');?>"
         },
         {
             val: "pdfshipments_order",
             label: "Print Packing Slips",
-            url: "sales/order/pdfshipments"
+            url: "<?=$this->getUrl('sales/order/pdfshipments');?>"
         },
         {
             val: "pdfcreditmemos_order",
             label: "Print Credit Memos",
-            url: "sales/order/pdfcreditmemos"
+            url: "<?=$this->getUrl('sales/order/pdfcreditmemos');?>"
         },
         {
             val: "pdfdocs_order",
             label: "Print All",
-            url: "sales/order/pdfdocs"
+            url: "<?=$this->getUrl('sales/order/pdfdocs');?>"
         },
         {
             val: "print_shipping_label",
             label: "Print Shipping Labels",
-            url: "adminhtml/order_shipment/massPrintShippingLabel"
+            url: "<?=$this->getUrl('adminhtml/order_shipment/massPrintShippingLabel');?>"
         }
     ];
 

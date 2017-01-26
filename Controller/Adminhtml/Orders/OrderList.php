@@ -46,8 +46,9 @@ class OrderList extends \Magento\Framework\App\Action\Action
       $sortBy = ($this->getRequest()->getParam('sort_by'))? $this->getRequest()->getParam('sort_by') : 'created_at';
       $orderBy = ($this->getRequest()->getParam('order'))? $this->getRequest()->getParam('order') : 'DESC';
       $keyword = $this->getRequest()->getParam('keyword');
-
-      if($keyword){
+      $searchColumns = $this->getRequest()->getParam('searchColumns');
+     
+      if($keyword && $searchColumns == "false"){
         $filters[] = $this->filterBuilder->setField('increment_id')
           ->setValue($keyword)
           ->setConditionType('like')
@@ -66,13 +67,25 @@ class OrderList extends \Magento\Framework\App\Action\Action
           ->setConditionType('like')
           ->create();
 
+      }elseif($keyword && $searchColumns != "false"){
+        $searchableCol = explode(',', rtrim($searchColumns,','));
+        $blackList = ['created_at', 'updated_at'];
+        foreach($searchableCol as $tmpCol){
+          if(!in_array($tmpCol, $blackList)){
+            $filters[] = $this->filterBuilder->setField(trim($tmpCol))
+              ->setValue($keyword)
+              ->setConditionType('like')
+              ->create();
+          }
+        }
+
       }else{
         $filters[] = $this->filterBuilder->setField('entity_id')
           ->setValue(0)
           ->setConditionType('gt')
           ->create();
       }
-
+ 
       $sortOrder = $this->sortOrderBuilder
             ->setField($sortBy)
             ->setDirection($orderBy)

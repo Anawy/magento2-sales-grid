@@ -69,10 +69,11 @@ define([
                 totalPages: null,
                 totalRecords: null,
                 currentPage: 'page',
-                pageSize: 'results_per_page'
+                pageSize: 'results_per_page',
+                searchColumns: false
             },
             state: {
-                pageSize: 20,
+                pageSize: config.defaultPerPage,
                 totalRecords: null
             },
             mode: 'server',
@@ -121,18 +122,37 @@ define([
         var GridView = Backbone.View.extend({
             el: "#gridContainer",
             events: {
-                "change #grid-fields input": "gridFieldsHandler",
+                "change #grid-fields [name=\"GridFields\"] input": "gridFieldsHandler",
+                "change #grid-fields input[name=\"SearchVisibleColumns\"]": "searchVisibleHandler",
                 "change #grid-fields select": "perPageHandler",
                 "click #showHide": "showHideOptions"
             },
             perPage: config.perPage,
             activeColumns: config.defaultColumns,
-            perPageHandler: function(evt){
+            perPageHandler: function(evt) {
                 this.collection.pagingCol.setPageSize(Number($(evt.target).val()));
             },
-            gridFieldsHandler: function(evt){
+            searchVisibleHandler: function(evt) {
+                if($(evt.target).is(':checked')){
+                    console.log('col: ',this.collection.pagingCol);
+                    this.collection.pagingCol.queryParams.searchColumns = this.activeColumns.toString();
+                    this.collection.pagingCol.fetch({
+                        reset: true
+                    });
+                }else{
+                    this.collection.pagingCol.queryParams.searchColumns = false;
+                    this.collection.pagingCol.fetch({
+                        reset: true
+                    });
+                }
+            },
+            gridFieldsHandler: function(evt) {
                 this.generateColumns($(evt.target).val());
-                this.collection.pagingCol.fetch({reset: true});
+
+                this.collection.pagingCol.fetch({
+                    reset: true
+                });
+
                 this.addRemoveColumns();
             },
             initialize: function() {
@@ -149,36 +169,37 @@ define([
 
                 this.collection.gridAttr.fetch();
             },
-            massActionOptions: function(){
+            massActionOptions: function() {
                 var tmpArr = [];
-                _.each(config.massActions, function(tmpObj){
+
+                _.each(config.massActions, function(tmpObj) {
                     tmpArr.push([tmpObj.label, tmpObj.val]);
                 });
+
                 return tmpArr;
             },
-            setDefaultForm: function(){
-                _.each(config.defaultColumns, function(tmpColumn){
-                    $('[name="GridFields"][value="'+tmpColumn+'"]').prop('checked', true);
+            setDefaultForm: function() {
+                _.each(config.defaultColumns, function(tmpColumn) {
+                    $('[name="GridFields"][value="' + tmpColumn + '"]').prop('checked', true);
                 });
                 $('[name="PerPage"]').val(config.defaultPerPage);
             },
-            showHideOptions: function(){
+            showHideOptions: function() {
                 $("#grid-fields").toggle();
             },
             ucwords: function(str) {
-              return (str + '')
-                .replace(/^([a-z\u00E0-\u00FC])|\s+([a-z\u00E0-\u00FC])/g, function ($1) {
-                  return $1.toUpperCase()
-                })
+                return (str + '').replace(/^([a-z\u00E0-\u00FC])|\s+([a-z\u00E0-\u00FC])/g, function($1) {
+                    return $1.toUpperCase();
+                });
             },
             loadForm: function() {
-                console.log(this.collection.gridAttr.toJSON());
                 var GridFields = Backbone.Model.extend({
                     schema: {
                         PerPage: {
                             type: 'Select',
                             options: this.perPage
                         },
+                        SearchVisibleColumns: 'Checkbox',
                         GridFields: {
                             type: 'Checkboxes',
                             options: this.collection.gridAttr.toJSON()
@@ -186,11 +207,12 @@ define([
                     }
                 });
                 var gFields = new GridFields();
+
                 var form = new Backbone.Form({
                     model: gFields
                 }).render();
-                $('#grid-fields').append(form.el);
 
+                $('#grid-fields').append(form.el);
 
                 var ActionFields = Backbone.Model.extend({
                     schema: {
@@ -200,30 +222,33 @@ define([
                         }
                     }
                 });
+
                 var aFields = new ActionFields();
+
                 var form = new Backbone.Form({
-                    model: aFields
+                    model: aFields,
+                    submitButton: 'Submit Actions'
                 }).render();
                 $('#grid-actions').append(form.el);
 
             },
-            addRemoveColumns: function(){
+            addRemoveColumns: function() {
                 var self = this;
 
                 this.grid.columns.reset();
 
-                _.each(this.columnArr, function(tmpVal){
+                _.each(this.columnArr, function(tmpVal) {
                     self.grid.insertColumn(tmpVal);
                 });
             },
-            generateColumns: function(colName = ''){
+            generateColumns: function(colName = '') {
                 var self = this;
-                if(!_.contains(this.activeColumns, colName)){
+                if (!_.contains(this.activeColumns, colName)) {
                     this.activeColumns.push(colName);
-                }else{
+                } else {
                     this.activeColumns = _.without(this.activeColumns, colName);
                 }
-                
+
                 this.columnArr = [{
                     name: '',
                     cell: Backgrid.Extension.SelectRowCell,
@@ -232,31 +257,35 @@ define([
 
                 var massOptions = this.massActionOptions();
 
-                _.each(this.activeColumns, function(tmpVal){
+                _.each(this.activeColumns, function(tmpVal) {
                     var tmpObj = {
                         name: tmpVal,
                         label: self.ucwords(tmpVal.replace(/_/g, " ")),
                         editable: false
                     };
-                    switch(tmpVal){
+                    switch (tmpVal) {
                         case "entity_id":
-                            tmpObj['cell'] = Backgrid.IntegerCell.extend({orderSeparator: ''});
-                        break;
+                            tmpObj['cell'] = Backgrid.IntegerCell.extend({
+                                orderSeparator: ''
+                            });
+                            break;
                         case "increment_id":
-                            tmpObj['cell'] = Backgrid.IntegerCell.extend({orderSeparator: ''});
-                        break;
+                            tmpObj['cell'] = Backgrid.IntegerCell.extend({
+                                orderSeparator: ''
+                            });
+                            break;
                         case "created_at":
                             tmpObj['cell'] = timeDateFormat;
-                        break;
+                            break;
                         case "updated_at":
                             tmpObj['cell'] = timeDateFormat;
-                        break;
-                        default: 
+                            break;
+                        default:
                             tmpObj['cell'] = 'string';
-                        break;   
+                            break;
                     }
 
-                    self.columnArr.push(tmpObj);   
+                    self.columnArr.push(tmpObj);
                 });
 
                 this.columnArr.push({
@@ -298,7 +327,7 @@ define([
                 $('#grid-wrapper').html(this.grid.render().el);
                 $('#grid-paginator').html(paginator.render().el);
 
-                $("#grid-wrapper").before(serverSideFilter.render().el);
+                $("#searchTitle").after(serverSideFilter.render().el);
 
                 this.collection.pagingCol.fetch();
             }
@@ -307,6 +336,7 @@ define([
 
 
         var gridAttr = new GridAttributeCol();
+
         var pagingCol = new PagingCol({
             model: new PageModel()
         });
