@@ -255,8 +255,6 @@ define([
                     headerCell: Backgrid.Extension.SelectAllHeaderCell
                 }];
 
-                var massOptions = this.massActionOptions();
-
                 _.each(this.activeColumns, function(tmpVal) {
                     var tmpObj = {
                         name: tmpVal,
@@ -292,7 +290,7 @@ define([
                     name: "action",
                     label: "Action",
                     cell: Backgrid.SelectCell.extend({
-                        optionValues: massOptions
+                        optionValues: this.massActionOptions()
                     })
                 });
             },
@@ -322,12 +320,19 @@ define([
                     placeholder: "ex: name, email or increment id"
                 });
 
+                var serverSideProductFilter = new Backgrid.Extension.ServerSideFilter({
+                    collection: this.collection.pagingCol,
+                    name: "productSearch",
+                    placeholder: "ex: sku or product name"
+                });
+
                 // grid.sort('entity_id', 'descending');
 
                 $('#grid-wrapper').html(this.grid.render().el);
                 $('#grid-paginator').html(paginator.render().el);
 
                 $("#searchTitle").after(serverSideFilter.render().el);
+                $("#searchTitle").after(serverSideProductFilter.render().el);
 
                 this.collection.pagingCol.fetch();
             }

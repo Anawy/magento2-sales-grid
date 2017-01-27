@@ -35,5 +35,7 @@ sudo php bin/magento setup:static-content:deploy && sudo php bin/magento indexer
 - Add in actions.
 - ~~Add in multi select for actions.~~
 - Activate CRUD on data in client grid and add CRUD to controller.
+- Add in admin session check then redirect to result and to grid page. Right now the result is insecure.
+- Finish product search once this magento bug is fixed. https://github.com/magento/magento2/issues/8300
 
 ## Please Contribute if you want to add any of this functionality I will merge to master. 
